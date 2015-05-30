@@ -1,0 +1,78 @@
+<link rel="import"
+      href="../bower_components/polymer/polymer.html">
+
+<dom-module id="poly-blink">
+  <style>
+    :host.on {
+      visibility: visible;
+    }
+
+    :host.off {
+      visibility: hidden;
+    }
+
+    .fadeout {
+      animation-name: fadeout;
+      animation-iteration-count: infinite;
+      animation-direction: alternate;
+    }
+
+    @keyframes fadeout {
+      from {
+        opacity: 1;
+      }
+
+      to {
+        opacity: 0;
+      }
+    }
+  </style>
+  <template>
+    <div id="container">
+      <content></content> 
+    </div>
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+    is: "poly-blink",
+
+    properties: {
+      blinkRate: {
+        type: Number,
+        value: 0.4
+      },
+
+      blinkRateInMillis: {
+        type: Number,
+        computed: 'computeBlinkRateInMillis(blinkRate)'
+      },
+
+      fadeOut: {
+        type: Boolean,
+        value: false
+      }
+    },
+
+    attached: function() {
+      if (this.fadeOut) {
+        this.$.container.setAttribute('style', 'animation-duration: ' + this.blinkRate + 's');
+        this.$.container.classList.add('fadeout');
+      } else {
+        var isVisible = true;
+
+        setInterval(function() {
+          isVisible = !isVisible;
+
+          this.toggleClass('on', isVisible === true);
+          this.toggleClass('off', isVisible === false);
+        }.bind(this), this.blinkRateInMillis);
+      }
+    },
+
+    computeBlinkRateInMillis: function(seconds) {
+      return seconds * 1000;
+    }
+  });
+</script>
